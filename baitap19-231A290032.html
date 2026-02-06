@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TODO MATRIX - Eisenhower</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#0f1a33;
+      --card2:#111f3d;
+      --text:#eaf0ff;
+      --muted:#a8b3d6;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(circle at 20% 20%, rgba(45,212,191,.25) 0, transparent 40%),
+                  radial-gradient(circle at 80% 30%, rgba(106,90,249,.25) 0, transparent 40%),
+                  var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding:18px 16px;
+      max-width:1100px;
+      margin:0 auto;
+    }
+    header h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:.2px;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto 30px;
+      padding:0 16px 24px;
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap:16px;
+    }
+    @media (max-width: 860px){
+      .wrap{grid-template-columns:1fr}
+    }
+
+    /* Left column */
+    .info{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+      position:sticky;
+      top:12px;
+      align-self:start;
+    }
+    @media (max-width: 860px){
+      .info{position:relative; top:auto}
+    }
+    .avatar{
+      width:92px; height:92px;
+      border-radius:50%;
+      margin:4px auto 12px;
+      overflow:hidden;
+      border:2px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .name{
+      margin:0;
+      font-weight:700;
+      font-size:18px;
+      text-align:center;
+    }
+    .mssv{
+      margin:6px 0 14px;
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .form{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .form label{
+      text-align:left;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:4px;
+      display:block;
+    }
+    .input, select{
+      width:100%;
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background: rgba(15,26,51,.7);
+      color:var(--text);
+      outline:none;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 110px;
+      gap:10px;
+    }
+    @media (max-width: 420px){
+      .row{grid-template-columns:1fr}
+    }
+    .btn{
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(106,90,249,.22);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:600;
+      transition:.15s transform, .15s box-shadow, .15s background;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0,0,0,.28);
+      background: rgba(106,90,249,.28);
+    }
+    .btn.secondary{
+      background: rgba(255,255,255,.08);
+    }
+    .btn.secondary:hover{
+      background: rgba(255,255,255,.12);
+    }
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+      margin:10px 0 0;
+    }
+
+    /* Right column - matrix */
+    .board{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 860px){
+      .grid{grid-template-columns:1fr}
+    }
+    .quad{
+      border:1px solid var(--border);
+      border-radius:14px;
+      background: rgba(15,26,51,.55);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:170px;
+    }
+    .quad header{
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      max-width:none;
+      margin:0;
+    }
+    .quad h3{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+    .tag{
+      font-size:12px;
+      color:var(--muted);
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      white-space:nowrap;
+    }
+    .list{
+      padding:10px 12px 12px;
+      display:grid;
+      gap:8px;
+      flex:1;
+    }
+    .task{
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;
+      background: rgba(17,31,61,.65);
+      padding:10px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      cursor:grab;
+    }
+    .task:active{cursor:grabbing}
+    .task .text{
+      text-align:left;
+      font-size:14px;
+      line-height:1.35;
+      word-break:break-word;
+    }
+    .meta{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      align-items:flex-end;
+      min-width:72px;
+    }
+    .prio{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--border);
+      padding:3px 8px;
+      border-radius:999px;
+      background: rgba(255,255,255,.04);
+    }
+    .del{
+      border:none;
+      background: rgba(255,107,139,.18);
+      color: var(--text);
+      padding:6px 9px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .del:hover{background: rgba(255,107,139,.26)}
+    .footer{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:13px;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>TODO MATRIX (Eisenhower)</h1>
+</header>
+
+<main class="wrap">
+  <!-- LEFT: INFO -->
+  <aside class="info">
+    <div class="avatar">
+      <!-- Nếu có file avatar.jpg cùng thư mục thì sẽ hiện, không có vẫn ok -->
+      <img src="avatar.jpg" alt="avatar" onerror="this.style.display='none'">
+    </div>
+
+    <p class="name" id="hoten">Họ tên: Lê Phúc Thịnh</p>
+    <p class="mssv">MSSV: <b id="mssvText"></b></p>
+
+    <div class="form" aria-label="form thêm công việc">
+      <div>
+        <label for="taskName">Tên công việc</label>
+        <input class="input" id="taskName" type="text" placeholder="VD: Làm bài tập LTW..." />
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="priority">Độ ưu tiên (1-4)</label>
+          <select id="priority">
+            <option value="1">1 - Quan trọng & Khẩn cấp</option>
+            <option value="2">2 - Quan trọng & Không khẩn cấp</option>
+            <option value="3">3 - Không quan trọng & Khẩn cấp</option>
+            <option value="4">4 - Không quan trọng & Không khẩn cấp</option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <button class="btn" onclick="addTask()">Thêm</button>
+        </div>
+      </div>
+
+      <button class="btn secondary" onclick="resetAll()">Xóa hết</button>
+
+      <p class="hint">
+        * Logic màu “chống AI”: Nếu tên công việc &gt; 10 ký tự → đổi màu chữ:
+        <br> - MSSV số cuối <b>chẵn</b> → <b style="color:#ff6b8b;">ĐỎ</b>
+        <br> - MSSV số cuối <b>lẻ</b> → <b style="color:#6aa7ff;">XANH DƯƠNG</b>
+        <br> * Dữ liệu lưu LocalStorage với key: <b>tasks_[MSSV]</b>
+      </p>
+    </div>
+  </aside>
+
+  <!-- RIGHT: BOARD -->
+  <section class="board">
+    <div class="grid">
+      <section class="quad" aria-label="Quan trọng & Khẩn cấp">
+        <header>
+          <h3>Quan trọng & Khẩn cấp</h3>
+          <span class="tag">Ưu tiên 1</span>
+        </header>
+        <div class="list" id="q1"></div>
+      </section>
+
+      <section class="quad" aria-label="Quan trọng & Không khẩn cấp">
+        <header>
+          <h3>Quan trọng & Không khẩn cấp</h3>
+          <span class="tag">Ưu tiên 2</span>
+        </header>
+        <div class="list" id="q2"></div>
+      </section>
+
+      <section class="quad" aria-label="Không quan trọng & Khẩn cấp">
+        <header>
+          <h3>Không quan trọng & Khẩn cấp</h3>
+          <span class="tag">Ưu tiên 3</span>
+        </header>
+        <div class="list" id="q3"></div>
+      </section>
+
+      <section class="quad" aria-label="Không quan trọng & Không khẩn cấp">
+        <header>
+          <h3>Không quan trọng & Không khẩn cấp</h3>
+          <span class="tag">Ưu tiên 4</span>
+        </header>
+        <div class="list" id="q4"></div>
+      </section>
+    </div>
+
+    <div class="footer">
+      <div>Tổng task: <b id="count">0</b></div>
+      <div>Tip: Nhập tên + chọn ưu tiên rồi bấm “Thêm”</div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // ====== CONFIG ======
+  const MSSV = "231A290032";            // <<< ĐỔI MSSV nếu cần
+  const STORAGE_KEY = `tasks_${MSSV}`;  // yêu cầu: tasks_[MSSV]
+
+  document.getElementById("mssvText").textContent = MSSV;
+
+  // Số cuối MSSV chẵn/lẻ để đổi màu
+  const lastDigit = Number(MSSV[MSSV.length - 1]);
+  const longNameColor = (lastDigit % 2 === 0) ? "#ff6b8b" : "#6aa7ff"; // đỏ / xanh dương
+
+  // ====== STATE ======
+  let tasks = [];
+
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }
+
+  function load(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    tasks = raw ? JSON.parse(raw) : [];
+  }
+
+  function countAll(){
+    document.getElementById("count").textContent = tasks.length;
+  }
+
+  // Map priority -> quadrant id
+  function quadIdByPriority(p){
+    if(p === 1) return "q1";
+    if(p === 2) return "q2";
+    if(p === 3) return "q3";
+    return "q4";
+  }
+
+  // ====== RENDER ======
+  function render(){
+    // clear
+    ["q1","q2","q3","q4"].forEach(id => document.getElementById(id).innerHTML = "");
+
+    tasks.forEach(t => {
+      const wrap = document.createElement("div");
+      wrap.className = "task";
+
+      const text = document.createElement("div");
+      text.className = "text";
+      text.textContent = t.name;
+
+      // logic chống AI: tên > 10 ký tự
+      if(t.name.length > 10){
+        text.style.color = longNameColor;
+        text.style.fontWeight = "700";
+      }
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+
+      const pr = document.createElement("div");
+      pr.className = "prio";
+      pr.textContent = "P" + t.priority;
+
+      const del = document.createElement("button");
+      del.className = "del";
+      del.textContent = "Xóa";
+      del.onclick = () => removeTask(t.id);
+
+      meta.appendChild(pr);
+      meta.appendChild(del);
+
+      wrap.appendChild(text);
+      wrap.appendChild(meta);
+
+      document.getElementById(quadIdByPriority(t.priority)).appendChild(wrap);
+    });
+
+    countAll();
+  }
+
+  // ====== ACTIONS ======
+  function addTask(){
+    const nameEl = document.getElementById("taskName");
+    const prEl = document.getElementById("priority");
+
+    const name = nameEl.value.trim();
+    const priority = Number(prEl.value);
+
+    if(!name){
+      alert("Bạn chưa nhập tên công việc!");
+      return;
+    }
+    if(!(priority >= 1 && priority <= 4)){
+      alert("Độ ưu tiên phải từ 1 đến 4!");
+      return;
+    }
+
+    tasks.push({
+      id: Date.now() + Math.random(),
+      name,
+      priority
+    });
+
+    save();
+    render();
+
+    nameEl.value = "";
+    nameEl.focus();
+  }
+
+  function removeTask(id){
+    tasks = tasks.filter(t => t.id !== id);
+    save();
+    render();
+  }
+
+  function resetAll(){
+    if(confirm("Xóa hết công việc?")){
+      tasks = [];
+      save();
+      render();
+    }
+  }
+
+  // init
+  load();
+  render();
+</script>
+</body>
+</html>
